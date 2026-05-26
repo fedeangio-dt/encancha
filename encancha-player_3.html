@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1A7A3C">
+<title>EN CANCHA — Jugadora</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700;800&display=swap');
+:root {
+  --ice:#EEF4FC; --ice2:#DDE9F8; --blue:#003870; --blue2:#0057A8; --blue3:#1A82E2;
+  --blue-light:#C8DEF7; --red:#C8102E; --white:#FFFFFF;
+  --gray1:#0D2A4A; --gray2:#3A5C80; --gray3:#7A9BBF; --gray4:#B8CFE8;
+  --green:#1A7A3C; --green2:#156332; --green-bg:#D4EDDE; --green-light:#A7D7B8;
+  --red-bg:#FADDDF; --purple:#5B21B6; --purple-bg:#EDE9FE;
+  --orange:#C2410C; --orange-bg:#FFEDD5;
+  --border:rgba(0,87,168,0.14); --rink:rgba(0,87,168,0.09);
+  --font-head:'Bebas Neue',sans-serif; --font-ui:'Barlow',sans-serif; --font-cond:'Barlow Condensed',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--ice);color:var(--gray1);font-family:var(--font-ui);min-height:100vh;overflow-x:hidden}
+
+.header{background:var(--green);padding:11px 16px 10px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--green-light)}
+.logo-wrap{width:42px;height:42px;background:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,0.3)}
+.logo-abbr{font-family:var(--font-cond);font-weight:800;font-size:13px;color:var(--green);letter-spacing:-0.5px;text-align:center}
+.header-text{flex:1;min-width:0}
+.header-club{font-family:var(--font-head);font-size:20px;letter-spacing:1px;line-height:1;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-sub{font-family:var(--font-cond);font-size:10px;color:var(--green-light);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.header-right{display:flex;gap:6px}
+.cfg-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.9);font-size:15px;width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.num-badge{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 10px;display:flex;flex-direction:column;align-items:center}
+.num-badge-label{font-family:var(--font-cond);font-size:8px;color:rgba(255,255,255,0.6);letter-spacing:1px;text-transform:uppercase}
+.num-badge-value{font-family:var(--font-head);font-size:18px;color:white;line-height:1}
+
+.nav{background:var(--green2);display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,0.1);position:sticky;top:74px;z-index:99}
+.nav::-webkit-scrollbar{display:none}
+.nav-item{flex-shrink:0;padding:0 16px;height:44px;display:flex;align-items:center;gap:6px;font-family:var(--font-cond);font-weight:700;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.6);cursor:pointer;border-bottom:3px solid transparent;transition:all 0.15s;user-select:none}
+.nav-item:hover{color:white;background:rgba(255,255,255,0.06)}
+.nav-item.active{color:white;border-bottom-color:#A7D7B8;background:rgba(255,255,255,0.08)}
+
+.tab-content{display:none;padding:12px 14px 80px}
+.tab-content.active{display:block}
+
+.section-label{font-family:var(--font-cond);font-weight:700;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* JOIN SCREEN */
+.join-screen{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.join-logo{font-family:var(--font-head);font-size:52px;letter-spacing:4px;color:var(--green);margin-bottom:4px}
+.join-sub{font-family:var(--font-cond);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--gray3);margin-bottom:32px}
+.join-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:360px}
+.join-card-title{font-family:var(--font-head);font-size:22px;color:var(--green);margin-bottom:4px}
+.join-card-sub{font-size:12px;color:var(--gray3);margin-bottom:20px}
+.join-input{width:100%;background:var(--ice);border:2px solid var(--border);border-radius:10px;color:var(--gray1);font-family:var(--font-head);font-size:28px;letter-spacing:4px;padding:12px;outline:none;text-align:center;text-transform:uppercase;transition:border-color 0.15s;margin-bottom:10px}
+.join-input:focus{border-color:var(--green)}
+.join-input::placeholder{font-size:16px;letter-spacing:1px;color:var(--gray4)}
+.join-btn{width:100%;padding:13px;background:var(--green);border:none;color:white;font-family:var(--font-cond);font-size:14px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:10px;cursor:pointer;transition:background 0.15s;margin-bottom:8px}
+.join-btn:active{background:var(--green2)}
+.join-btn:disabled{opacity:0.5;cursor:default}
+.join-error{font-family:var(--font-cond);font-size:12px;color:var(--red);text-align:center;margin-top:6px;display:none}
+
+/* PROFILE SETUP */
+.setup-section{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px}
+.setup-title{font-family:var(--font-head);font-size:24px;color:var(--green);margin-bottom:4px}
+.setup-sub{font-size:12px;color:var(--gray3);margin-bottom:18px}
+.form-group{margin-bottom:14px}
+.form-label{font-family:var(--font-cond);font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:5px;display:block}
+.form-input{width:100%;background:var(--ice);border:1px solid var(--border);border-radius:8px;color:var(--gray1);font-family:var(--font-ui);font-size:14px;padding:10px 12px;outline:none;transition:border-color 0.15s}
+.form-input:focus{border-color:var(--green)}
+.position-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pos-btn{padding:8px 4px;background:var(--ice);border:1px solid var(--border);border-radius:8px;font-family:var(--font-cond);font-size:11px;font-weight:700;color:var(--gray2);cursor:pointer;text-align:center;transition:all 0.15s;letter-spacing:0.5px}
+.pos-btn.active{background:var(--green);color:white;border-color:var(--green)}
+.save-profile-btn{width:100%;padding:13px;background:var(--green);border:none;color:white;font-family:var(--font-cond);font-size:14px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:10px;cursor:pointer;margin-top:6px}
+
+/* PROFILE CARD */
+.profile-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:center}
+.profile-avatar{width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:26px;color:white;flex-shrink:0;border:3px solid var(--green-light)}
+.profile-name{font-family:var(--font-head);font-size:24px;letter-spacing:0.5px;color:var(--green);line-height:1}
+.profile-detail{font-family:var(--font-cond);font-size:11px;color:var(--gray3);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.profile-number{font-family:var(--font-head);font-size:40px;color:var(--green);line-height:1;opacity:0.5}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat-card{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:12px 10px;text-align:center;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green)}
+.stat-card.win::before{background:var(--green)}
+.stat-card.lose::before{background:var(--red)}
+.stat-card.diff::before{background:var(--blue3)}
+.stat-card .num{font-family:var(--font-head);font-size:30px;color:var(--green);line-height:1}
+.stat-card.lose .num{color:var(--red)}
+.stat-card.blue-top::before{background:var(--blue3)}
+.stat-card.blue-top .num{color:var(--blue2)}
+.stat-card .lbl{font-family:var(--font-cond);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--gray3);margin-top:3px}
+
+/* RINK */
+.rink-card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px}
+.rink-header{background:var(--green);padding:9px 14px;display:flex;align-items:center;justify-content:space-between}
+.rink-header.purple{background:var(--purple)}
+.rink-header.orange{background:var(--orange)}
+.rink-header.blue{background:var(--blue2)}
+.rink-header-title{font-family:var(--font-cond);font-weight:700;font-size:13px;color:white;text-transform:uppercase;letter-spacing:0.5px}
+.rink-badge{font-family:var(--font-cond);font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.2);color:white}
+.totals-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--rink)}
+.totals-row:last-child{border-bottom:none}
+.totals-row:hover{background:var(--ice)}
+.totals-stat-name{font-family:var(--font-cond);font-size:14px;font-weight:600;color:var(--gray2)}
+.totals-vals{font-family:var(--font-head);font-size:19px}
+.v-us{color:var(--green)} .v-sep{color:var(--gray4);margin:0 5px;font-size:15px} .v-them{color:var(--red)}
+
+/* MESSAGES */
+.msg-bubble{padding:10px 13px;border-radius:12px;margin-bottom:8px}
+.msg-bubble.coach{background:var(--purple-bg);border:1px solid rgba(91,33,182,0.15);border-radius:12px 12px 12px 2px}
+.msg-from{font-family:var(--font-cond);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--purple);margin-bottom:4px}
+.msg-text{font-size:14px;color:var(--gray1);line-height:1.5}
+.msg-time{font-size:10px;color:var(--gray3);margin-top:4px;font-family:var(--font-cond)}
+
+/* NOTIFICATION BANNER */
+.notif-banner{background:var(--purple-bg);border:1px solid rgba(91,33,182,0.2);border-radius:12px;padding:14px;margin-bottom:10px;position:relative}
+.notif-label{font-family:var(--font-cond);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.notif-text{font-size:14px;color:var(--gray1);line-height:1.5}
+.notif-time{font-size:10px;color:var(--gray3);margin-top:4px;font-family:var(--font-cond)}
+
+/* OBJECTIVE ITEM */
+.obj-item{background:var(--ice);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.obj-check{width:20px;height:20px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
+.obj-check.done{background:var(--purple);color:white}
+.obj-check.pending{border:2px solid var(--purple)}
+.obj-text{font-family:var(--font-cond);font-size:13px;font-weight:600;color:var(--gray2)}
+.obj-text.done{text-decoration:line-through;color:var(--gray3)}
+
+/* LINEUP */
+.lineup-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--rink)}
+.lineup-item:last-child{border-bottom:none}
+.lineup-item.highlight{background:rgba(26,122,60,0.08)}
+.lineup-num{font-family:var(--font-head);font-size:20px;color:var(--green);width:28px;text-align:center;flex-shrink:0}
+.lineup-name{flex:1;font-family:var(--font-cond);font-size:14px;font-weight:700;color:var(--gray1)}
+.lineup-pos{font-family:var(--font-cond);font-size:10px;font-weight:700;color:var(--gray3);letter-spacing:1px}
+.you-badge{font-family:var(--font-cond);font-size:9px;font-weight:700;letter-spacing:1px;background:var(--green);color:white;padding:2px 7px;border-radius:4px}
+
+/* GAME HISTORY */
+.game-row{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.game-rival{flex:1}
+.game-rival-name{font-family:var(--font-cond);font-size:14px;font-weight:700;color:var(--gray1)}
+.game-rival-date{font-size:10px;color:var(--gray3);font-family:var(--font-cond);margin-top:1px}
+.game-score{font-family:var(--font-head);font-size:22px;text-align:right}
+.game-score .gf{color:var(--green)} .game-score .sep{color:var(--gray4);margin:0 3px} .game-score .gc{color:var(--red)}
+.game-result-pill{font-family:var(--font-cond);font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase}
+.game-result-pill.w{background:var(--green-bg);color:var(--green)}
+.game-result-pill.l{background:var(--red-bg);color:var(--red)}
+.game-result-pill.e{background:var(--ice2);color:var(--gray3)}
+
+/* LIVE BADGE */
+.live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(200,16,46,0.1);border:1px solid rgba(200,16,46,0.2);border-radius:6px;padding:3px 8px;font-family:var(--font-cond);font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px}
+.dot-live{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse-dot 1.2s infinite}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,30,70,0.6);display:none;align-items:flex-end;justify-content:center;z-index:200;backdrop-filter:blur(3px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 20px 36px;width:100%;max-width:500px;border-top:4px solid var(--green);max-height:85vh;overflow-y:auto}
+.modal-handle{width:36px;height:4px;background:var(--gray4);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-family:var(--font-head);font-size:22px;letter-spacing:1px;color:var(--green);margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--gray3);margin-bottom:20px}
+.modal-footer{display:flex;gap:8px;margin-top:20px}
+.btn-cancel{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--ice2);color:var(--gray2);font-family:var(--font-cond);font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer}
+.btn-apply{flex:2;padding:12px;border-radius:10px;border:none;background:var(--green);color:white;font-family:var(--font-cond);font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:16px}
+.loading-logo{font-family:var(--font-head);font-size:48px;letter-spacing:4px;color:white}
+.loading-sub{font-family:var(--font-cond);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--green-light)}
+.loading-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite}
+
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--green);color:white;font-family:var(--font-cond);font-size:14px;font-weight:600;letter-spacing:0.5px;padding:10px 22px;border-radius:30px;box-shadow:0 4px 24px rgba(26,122,60,0.4);pointer-events:none;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.empty-state{text-align:center;padding:3rem 1rem}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty-title{font-family:var(--font-cond);font-weight:700;font-size:18px;color:var(--gray2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--gray3);line-height:1.5}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">EN CANCHA</div>
+  <div class="loading-sub">Cargando...</div>
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- HEADER (oculto hasta unirse) -->
+<div class="header" id="main-header" style="display:none">
+  <div class="logo-wrap"><span class="logo-abbr" id="logo-abbr">EC</span></div>
+  <div class="header-text">
+    <div class="header-club" id="header-club">EN CANCHA</div>
+    <div class="header-sub" id="header-sub">Jugadora</div>
+  </div>
+  <div class="header-right">
+    <div class="num-badge">
+      <span class="num-badge-label">N°</span>
+      <span class="num-badge-value" id="header-num">—</span>
+    </div>
+    <button class="cfg-btn" onclick="openProfileModal()">✏️</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav" id="main-nav" style="display:none">
+  <div class="nav-item active" onclick="switchTab('inicio')">🏠 Inicio</div>
+  <div class="nav-item" onclick="switchTab('coach')">📣 Del Coach</div>
+  <div class="nav-item" onclick="switchTab('alineacion')">📋 Alineación</div>
+  <div class="nav-item" onclick="switchTab('estadisticas')">📊 Stats</div>
+  <div class="nav-item" onclick="switchTab('partidos')">📋 Partidos</div>
+</div>
+
+<!-- JOIN SCREEN -->
+<div id="join-screen">
+  <div class="join-screen">
+    <div class="join-logo">EN CANCHA</div>
+    <div class="join-sub">App de jugadora</div>
+    <div class="join-card">
+      <div class="join-card-title">Unirte a tu equipo</div>
+      <div class="join-card-sub">Pedile el código de 6 letras a tu entrenadora</div>
+      <input class="join-input" type="text" id="code-input" placeholder="Ej: ABCD12" maxlength="6" oninput="this.value=this.value.toUpperCase()">
+      <div class="join-error" id="join-error">Código incorrecto. Verificá con tu entrenadora.</div>
+      <button class="join-btn" id="join-btn" onclick="joinTeam()">Unirme al equipo →</button>
+      <div style="font-family:var(--font-cond);font-size:11px;color:var(--gray3);text-align:center;letter-spacing:0.5px">El código lo genera la app de la entrenadora</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main-content" style="display:none">
+  <div class="tab-content active" id="tab-inicio"></div>
+  <div class="tab-content" id="tab-coach"></div>
+  <div class="tab-content" id="tab-alineacion"></div>
+  <div class="tab-content" id="tab-estadisticas"></div>
+  <div class="tab-content" id="tab-partidos"></div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal" onclick="onOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Mi perfil</div>
+    <div class="modal-sub">Estos datos son visibles para tu entrenadora</div>
+    <div class="form-group">
+      <label class="form-label">Tu nombre</label>
+      <input class="form-input" id="p-name" type="text" placeholder="Ej: María García" maxlength="30">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Número de camiseta</label>
+      <input class="form-input" id="p-number" type="number" placeholder="Ej: 7" min="1" max="99">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Posición</label>
+      <div class="position-grid" id="pos-grid">
+        <button class="pos-btn" onclick="selectPos('PO')">PO</button>
+        <button class="pos-btn" onclick="selectPos('DEF')">DEF</button>
+        <button class="pos-btn" onclick="selectPos('MED')">MED</button>
+        <button class="pos-btn" onclick="selectPos('DEL')">DEL</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeProfileModal()">Cancelar</button>
+      <button class="btn-apply" onclick="saveProfile()">✓ Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBdLG-EOiDc_BRbGbb047l9BBpNCwmNMhQ",
+  authDomain: "en-cancha.firebaseapp.com",
+  projectId: "en-cancha",
+  storageBucket: "en-cancha.firebasestorage.app",
+  messagingSenderId: "1004134617546",
+  appId: "1:1004134617546:web:3d3645d6a4f68b2af0bf33"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const STATS_DEF = [
+  {id:'ea',name:'Entrada al área',short:'Entrada'},
+  {id:'ta',name:'Tiro al arco',short:'T. Arco'},
+  {id:'tf',name:'Tiro afuera',short:'T. Afuera'},
+  {id:'cc',name:'Corner corto',short:'C. Corto'},
+  {id:'gol',name:'Gol',short:'Gol'},
+  {id:'rp',name:'Rec. en presión',short:'Rec. Pres.'},
+  {id:'rd',name:'Rec. en defensa',short:'Rec. Def.'},
+];
+const mkStats = () => { const o={}; STATS_DEF.forEach(s=>o[s.id]={f:0,c:0}); return o; };
+const fmt = s => String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+
+/* ─── STATE ─── */
+let teamId = null;
+let playerId = null;
+let playerData = { name:'', number:'', position:'' };
+let teamData = {};
+let games = [];
+let messages = [];
+let objectives = [];
+let lineup = []; // array of {name, pos} — loaded from Firebase
+let subs = [];   // suplentes — loaded from Firebase
+let tacticText = '';
+let selectedPos = '';
+let currentTab = 'inicio';
+let unsubscribers = [];
+
+/* ─── INIT ─── */
+async function init() {
+  const storedTeam = localStorage.getItem('ec-player-teamid');
+  const storedPlayer = localStorage.getItem('ec-player-id');
+  const storedData = localStorage.getItem('ec-player-data');
+
+  if (storedTeam && storedPlayer) {
+    teamId = storedTeam;
+    playerId = storedPlayer;
+    if (storedData) playerData = JSON.parse(storedData);
+    const ok = await loadTeam();
+    if (ok) {
+      showMainUI();
+    } else {
+      localStorage.removeItem('ec-player-teamid');
+      localStorage.removeItem('ec-player-id');
+      showJoinScreen();
+    }
+  } else {
+    showJoinScreen();
+  }
+  document.getElementById('loading').style.display = 'none';
+}
+
+async function loadTeam() {
+  try {
+    const snap = await getDoc(doc(db,'teams',teamId));
+    if (!snap.exists()) return false;
+    teamData = snap.data();
+    return true;
+  } catch(e) { return false; }
+}
+
+function showJoinScreen() {
+  document.getElementById('join-screen').style.display = 'block';
+  document.getElementById('main-content').style.display = 'none';
+  document.getElementById('main-header').style.display = 'none';
+  document.getElementById('main-nav').style.display = 'none';
+}
+
+function showMainUI() {
+  document.getElementById('join-screen').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  document.getElementById('main-header').style.display = 'flex';
+  document.getElementById('main-nav').style.display = 'flex';
+  updateHeaderUI();
+  subscribeAll();
+  switchTab('inicio');
+  if (!playerData.name) setTimeout(() => openProfileModal(), 500);
+}
+
+/* ─── JOIN ─── */
+window.joinTeam = async function() {
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  if (code.length < 4) return;
+  const btn = document.getElementById('join-btn');
+  btn.disabled = true; btn.textContent = 'Buscando...';
+  document.getElementById('join-error').style.display = 'none';
+  try {
+    const snap = await getDoc(doc(db,'teams',code));
+    if (!snap.exists()) {
+      document.getElementById('join-error').style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Unirme al equipo →';
+      return;
+    }
+    teamId = code;
+    playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    localStorage.setItem('ec-player-teamid', teamId);
+    localStorage.setItem('ec-player-id', playerId);
+    teamData = snap.data();
+    showMainUI();
+    toast('✓ Te uniste al equipo');
+  } catch(e) {
+    document.getElementById('join-error').textContent = 'Error de conexión. Intentá de nuevo.';
+    document.getElementById('join-error').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Unirme al equipo →';
+  }
+};
+
+/* ─── SUBSCRIPTIONS ─── */
+function subscribeAll() {
+  unsubscribers.forEach(u => u());
+  unsubscribers = [];
+
+  // Team doc (lineup, objectives, tactic, clubData)
+  unsubscribers.push(onSnapshot(doc(db,'teams',teamId), snap => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    teamData = data;
+    lineup = data.lineup || [];
+    subs = data.subs || [];
+    objectives = data.objectives || [];
+    tacticText = data.tacticText || '';
+    if (data.clubData) updateHeaderFromTeam(data.clubData);
+    refreshCurrentTab();
+  }));
+
+  // Messages
+  const msgsQ = query(collection(db,'teams',teamId,'messages'), orderBy('createdAt','desc'));
+  unsubscribers.push(onSnapshot(msgsQ, snap => {
+    const prev = messages.length;
+    messages = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if (messages.length > prev && prev > 0) toast('📣 Nuevo mensaje de la entrenadora');
+    if (currentTab==='coach') renderCoach();
+    if (currentTab==='inicio') renderInicio();
+  }));
+
+  // Games
+  const gamesQ = query(collection(db,'teams',teamId,'games'), orderBy('createdAt','desc'));
+  unsubscribers.push(onSnapshot(gamesQ, snap => {
+    games = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if (currentTab==='estadisticas') renderEstadisticas();
+    if (currentTab==='partidos') renderPartidos();
+    if (currentTab==='inicio') renderInicio();
+  }));
+}
+
+function refreshCurrentTab() {
+  if (currentTab==='inicio') renderInicio();
+  if (currentTab==='coach') renderCoach();
+  if (currentTab==='alineacion') renderAlineacion();
+  if (currentTab==='estadisticas') renderEstadisticas();
+  if (currentTab==='partidos') renderPartidos();
+}
+
+function updateHeaderFromTeam(cd) {
+  document.getElementById('logo-abbr').textContent = cd.abbr||'EC';
+  document.getElementById('header-club').textContent = cd.name||'EN CANCHA';
+  document.getElementById('header-sub').textContent = (playerData.name||'Jugadora') + ' · ' + (cd.liga||'Hockey');
+}
+
+function updateHeaderUI() {
+  const cd = teamData.clubData || {};
+  document.getElementById('logo-abbr').textContent = cd.abbr||'EC';
+  document.getElementById('header-club').textContent = cd.name||'EN CANCHA';
+  document.getElementById('header-sub').textContent = (playerData.name||'Jugadora') + ' · ' + (cd.liga||'Hockey');
+  document.getElementById('header-num').textContent = playerData.number||'—';
+}
+
+/* ─── TABS ─── */
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const tabs=['inicio','coach','alineacion','estadisticas','partidos'];
+  const idx=tabs.indexOf(tab);
+  if(idx>=0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  if(tab==='inicio') renderInicio();
+  if(tab==='coach') renderCoach();
+  if(tab==='alineacion') renderAlineacion();
+  if(tab==='estadisticas') renderEstadisticas();
+  if(tab==='partidos') renderPartidos();
+};
+
+/* ─── INICIO ─── */
+function renderInicio() {
+  const el = document.getElementById('tab-inicio');
+  const cd = teamData.clubData || {};
+  const lastMsg = messages[0];
+  const wins = games.filter(g=>g.score&&g.score.f>g.score.c).length;
+  const total = games.length;
+  const lastGame = games[0];
+  const pendingObjs = objectives.filter(o=>!o.done);
+  const activeLineup = lineup.filter(p=>p&&p.name&&p.name.trim()!=='');
+  const activeSubs = subs.filter(p=>p&&p.name&&p.name.trim()!=='');
+  const myName = (playerData.name||'').toLowerCase().trim();
+  const inLineup = myName && activeLineup.some(p=>p.name.toLowerCase().trim()===myName);
+  const inSubs = myName && activeSubs.some(p=>p.name.toLowerCase().trim()===myName);
+
+  const initials = playerData.name ? playerData.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : '?';
+
+  el.innerHTML = `
+    <div class="profile-card">
+      <div class="profile-avatar">${initials}</div>
+      <div style="flex:1">
+        <div class="profile-name">${playerData.name||'Tu nombre'}</div>
+        <div class="profile-detail">${playerData.position||'Posición'} · ${cd.name||'Mi equipo'}</div>
+        ${!playerData.name?`<div style="margin-top:6px"><button onclick="openProfileModal()" style="background:var(--green);border:none;color:white;font-family:var(--font-cond);font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;letter-spacing:0.5px;">Completar perfil →</button></div>`:''}
+      </div>
+      <div class="profile-number">#${playerData.number||'—'}</div>
+    </div>
+
+    ${inLineup ? `
+      <div style="background:var(--green-bg);border:1px solid rgba(26,122,60,0.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="switchTab('alineacion')">
+        <div style="font-size:22px">⚽</div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-cond);font-weight:700;font-size:13px;color:var(--green);">¡Sos titular hoy!</div>
+          <div style="font-family:var(--font-cond);font-size:11px;color:var(--green);opacity:0.8;">Ver formación completa →</div>
+        </div>
+      </div>` : inSubs ? `
+      <div style="background:var(--ice2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="switchTab('alineacion')">
+        <div style="font-size:22px">🔄</div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-cond);font-weight:700;font-size:13px;color:var(--gray2);">Estás en el banco hoy</div>
+          <div style="font-family:var(--font-cond);font-size:11px;color:var(--gray3);">Ver formación completa →</div>
+        </div>
+      </div>` : activeLineup.length > 0 && myName ? `
+      <div style="background:var(--orange-bg);border:1px solid rgba(194,65,12,0.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;cursor:pointer" onclick="switchTab('alineacion')">
+        <div style="font-family:var(--font-cond);font-size:12px;color:var(--orange);">⚠️ No aparecés en la alineación. Ver formación →</div>
+      </div>` : ''}
+
+    ${lastMsg ? `
+      <div class="section-label">Último mensaje del coach</div>
+      <div class="notif-banner" onclick="switchTab('coach')" style="cursor:pointer">
+        <div class="notif-label">📣 ${cd.coach||'Entrenadora'} <span style="background:var(--purple);color:white;font-size:9px;padding:2px 6px;border-radius:4px;letter-spacing:1px;">NUEVO</span></div>
+        <div class="notif-text">${lastMsg.text}</div>
+        <div class="notif-time">${lastMsg.time||''} · Tocá para ver todos →</div>
+      </div>` : ''}
+
+    ${pendingObjs.length ? `
+      <div class="section-label">Objetivos del partido</div>
+      ${pendingObjs.slice(0,3).map(o=>`<div class="obj-item"><div class="obj-check pending"></div><div class="obj-text">${o.text}</div></div>`).join('')}
+      ${pendingObjs.length>3?`<div style="text-align:center;font-family:var(--font-cond);font-size:11px;color:var(--gray3);margin-top:4px;cursor:pointer" onclick="switchTab('coach')">+${pendingObjs.length-3} más →</div>`:''}
+    ` : ''}
+
+    <div class="section-label">Temporada</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num">${total}</div><div class="lbl">Partidos</div></div>
+      <div class="stat-card win"><div class="num">${wins}</div><div class="lbl">Victorias</div></div>
+      <div class="stat-card blue-top"><div class="num">${total?Math.round(wins/total*100):0}%</div><div class="lbl">Win rate</div></div>
+    </div>
+
+    ${lastGame ? `
+      <div class="section-label">Último partido</div>
+      <div class="game-row">
+        <div class="game-rival">
+          <div class="game-rival-name">vs ${lastGame.rival||'?'}</div>
+          <div class="game-rival-date">${lastGame.date||''}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="game-score"><span class="gf">${lastGame.score.f}</span><span class="sep">—</span><span class="gc">${lastGame.score.c}</span></div>
+          <div class="game-result-pill ${lastGame.score.f>lastGame.score.c?'w':lastGame.score.f<lastGame.score.c?'l':'e'}">${lastGame.score.f>lastGame.score.c?'Victoria':lastGame.score.f<lastGame.score.c?'Derrota':'Empate'}</div>
+        </div>
+      </div>` : ''}
+
+    ${tacticText ? `
+      <div class="section-label">Táctica del partido</div>
+      <div style="background:var(--orange-bg);border:1px solid rgba(194,65,12,0.2);border-radius:12px;padding:14px;">
+        <div style="font-family:var(--font-cond);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:6px;">📝 Pizarra</div>
+        <div style="font-size:13px;color:var(--gray1);line-height:1.6;white-space:pre-wrap">${tacticText}</div>
+      </div>` : ''}`;
+}
+
+/* ─── COACH ─── */
+function renderCoach() {
+  const el = document.getElementById('tab-coach');
+  const cd = teamData.clubData || {};
+  const pendingObjs = objectives.filter(o=>!o.done);
+  const doneObjs = objectives.filter(o=>o.done);
+
+  el.innerHTML = `
+    ${objectives.length ? `
+      <div class="section-label">Objetivos del partido · ${doneObjs.length}/${objectives.length} completados</div>
+      <div class="rink-card">
+        <div class="rink-header purple"><span class="rink-header-title">🎯 Objetivos tácticos</span></div>
+        <div style="padding:8px 0">
+          ${objectives.map(o=>`<div class="obj-item" style="margin:0;border-radius:0;border:none;border-bottom:1px solid var(--rink);">
+            <div class="obj-check ${o.done?'done':'pending'}">${o.done?'✓':''}</div>
+            <div class="obj-text ${o.done?'done':''}">${o.text}</div>
+          </div>`).join('')}
+        </div>
+      </div>` : ''}
+
+    ${tacticText ? `
+      <div class="section-label">Notas tácticas</div>
+      <div class="rink-card">
+        <div class="rink-header orange"><span class="rink-header-title">📝 Pizarra del partido</span></div>
+        <div style="padding:14px;font-size:13px;color:var(--gray1);line-height:1.6;white-space:pre-wrap">${tacticText}</div>
+      </div>` : ''}
+
+    <div class="section-label">Mensajes de ${cd.coach||'la entrenadora'}</div>
+    ${messages.length ? messages.map(m=>`
+      <div class="msg-bubble coach">
+        <div class="msg-from">📣 ${cd.coach||'Entrenadora'}</div>
+        <div class="msg-text">${m.text}</div>
+        <div class="msg-time">${m.time||''}</div>
+      </div>`).join('') : `<div class="empty-state" style="padding:2rem 1rem"><div class="empty-icon">📣</div><div class="empty-title">Sin mensajes</div><div class="empty-sub">Los mensajes de tu entrenadora aparecerán acá en tiempo real.</div></div>`}`;
+}
+
+/* ─── ALINEACIÓN ─── */
+function renderAlineacion() {
+  const el = document.getElementById('tab-alineacion');
+
+  const activeLineup = lineup.filter(p => p && p.name && p.name.trim() !== '');
+  const activeSubs = subs.filter(p => p && p.name && p.name.trim() !== '');
+  const hasLineup = activeLineup.length > 0;
+  const myName = (playerData.name||'').toLowerCase().trim();
+
+  const myStarterSpot = hasLineup ? activeLineup.findIndex(p => p.name.toLowerCase().trim() === myName) : -1;
+  const mySubSpot = activeSubs.findIndex(p => p.name.toLowerCase().trim() === myName);
+  const inAny = myStarterSpot >= 0 || mySubSpot >= 0;
+
+  const posCounts = {};
+  activeLineup.forEach(p => { const pos = p.pos||'—'; posCounts[pos] = (posCounts[pos]||0)+1; });
+  const posFormation = Object.entries(posCounts).filter(([p])=>p!=='—').map(([pos,n])=>`${n} ${pos}`).join(' · ');
+
+  el.innerHTML = `
+    <div class="section-label">Alineación del partido</div>
+
+    ${!hasLineup ? `
+      <div style="background:var(--ice2);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:12px;">
+        <div style="font-size:32px;margin-bottom:8px">📋</div>
+        <div style="font-family:var(--font-cond);font-weight:700;font-size:16px;color:var(--gray2);margin-bottom:4px">Sin alineación todavía</div>
+        <div style="font-family:var(--font-cond);font-size:12px;color:var(--gray3);">La entrenadora todavía no publicó la formación.</div>
+      </div>` : ''}
+
+    ${myStarterSpot >= 0 ? `
+      <div style="background:var(--green-bg);border:1px solid rgba(26,122,60,0.25);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+        <div style="font-size:26px">⚽</div>
+        <div>
+          <div style="font-family:var(--font-cond);font-weight:700;font-size:15px;color:var(--green);">¡Sos titular!</div>
+          <div style="font-family:var(--font-cond);font-size:12px;color:var(--green);opacity:0.8;margin-top:2px;">Posición #${myStarterSpot+1}${activeLineup[myStarterSpot].pos?' · '+activeLineup[myStarterSpot].pos:''}</div>
+        </div>
+      </div>` : mySubSpot >= 0 ? `
+      <div style="background:var(--ice2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+        <div style="font-size:26px">🔄</div>
+        <div>
+          <div style="font-family:var(--font-cond);font-weight:700;font-size:15px;color:var(--gray2);">Estás en el banco</div>
+          <div style="font-family:var(--font-cond);font-size:12px;color:var(--gray3);margin-top:2px;">Suplente${activeSubs[mySubSpot].pos?' · '+activeSubs[mySubSpot].pos:''}</div>
+        </div>
+      </div>` : myName && hasLineup ? `
+      <div style="background:var(--orange-bg);border:1px solid rgba(194,65,12,0.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;">
+        <div style="font-family:var(--font-cond);font-size:12px;color:var(--orange);">⚠️ No aparecés en la alineación de este partido.</div>
+      </div>` : ''}
+
+    ${hasLineup ? `
+      ${posFormation ? `<div style="background:var(--ice2);border:1px solid var(--border);border-radius:8px;padding:7px 14px;margin-bottom:10px;font-family:var(--font-cond);font-size:11px;color:var(--blue2);letter-spacing:0.5px;">📐 ${posFormation}</div>` : ''}
+      <div class="section-label">Titulares</div>
+      <div class="rink-card">
+        <div class="rink-header blue"><span class="rink-header-title">📋 ${activeLineup.length} titulares</span></div>
+        <div style="padding:4px 0">
+          ${activeLineup.map((p,i) => {
+            const isMe = myName && p.name.toLowerCase().trim() === myName;
+            return `<div class="lineup-item ${isMe?'highlight':''}">
+              <span class="lineup-num">${i+1}</span>
+              <span class="lineup-name">${p.name}</span>
+              ${p.pos ? `<span class="lineup-pos">${p.pos}</span>` : ''}
+              ${isMe ? '<span class="you-badge">VOS</span>' : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : ''}
+
+    ${activeSubs.length > 0 ? `
+      <div class="section-label">Suplentes</div>
+      <div class="rink-card">
+        <div class="rink-header" style="background:var(--gray2)"><span class="rink-header-title">🔄 Banco · ${activeSubs.length}</span></div>
+        <div style="padding:4px 0">
+          ${activeSubs.map((p,i) => {
+            const isMe = myName && p.name.toLowerCase().trim() === myName;
+            return `<div class="lineup-item ${isMe?'highlight':''}">
+              <span style="font-family:var(--font-cond);font-size:10px;font-weight:700;color:var(--gray3);width:28px;text-align:center;flex-shrink:0">S${i+1}</span>
+              <span class="lineup-name">${p.name}</span>
+              ${p.pos ? `<span class="lineup-pos">${p.pos}</span>` : ''}
+              ${isMe ? '<span class="you-badge">VOS</span>' : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : hasLineup ? `<div style="font-family:var(--font-cond);font-size:11px;color:var(--gray3);text-align:center;padding:8px 0 4px;">Sin suplentes asignados</div>` : ''}`;
+}
+
+/* ─── ESTADÍSTICAS ─── */
+function renderEstadisticas() {
+  const el = document.getElementById('tab-estadisticas');
+  if (games.length===0) {
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Sin datos todavía</div><div class="empty-sub">Las estadísticas del equipo aparecerán acá cuando la entrenadora guarde partidos.</div></div>`;
+    return;
+  }
+  const wins=games.filter(g=>g.score&&g.score.f>g.score.c).length;
+  const draws=games.filter(g=>g.score&&g.score.f===g.score.c).length;
+  const losses=games.filter(g=>g.score&&g.score.f<g.score.c).length;
+  const gf=games.reduce((a,g)=>a+(g.score?g.score.f:0),0);
+  const gc=games.reduce((a,g)=>a+(g.score?g.score.c:0),0);
+  const agg=mkStats();
+  games.forEach(g=>STATS_DEF.forEach(s=>(g.quarters||[]).forEach(q=>{agg[s.id].f+=((q||{})[s.id]||{f:0}).f;agg[s.id].c+=((q||{})[s.id]||{c:0}).c;})));
+
+  el.innerHTML=`
+    <div class="section-label">Temporada · ${games.length} partido${games.length!==1?'s':''}</div>
+    <div class="stat-grid">
+      <div class="stat-card win"><div class="num">${wins}</div><div class="lbl">Victorias</div></div>
+      <div class="stat-card"><div class="num">${draws}</div><div class="lbl">Empates</div></div>
+      <div class="stat-card lose"><div class="num">${losses}</div><div class="lbl">Derrotas</div></div>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="stat-card win"><div class="num">${gf}</div><div class="lbl">Goles a favor</div></div>
+      <div class="stat-card lose"><div class="num">${gc}</div><div class="lbl">Goles en contra</div></div>
+    </div>
+    <div class="section-label">Estadísticas del equipo</div>
+    <div class="rink-card">
+      <div class="rink-header"><span class="rink-header-title">Acumulado de temporada</span></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 14px;background:var(--ice);border-bottom:1px solid var(--border)">
+        <span style="font-family:var(--font-cond);font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray3)">Estadística</span>
+        <span style="font-family:var(--font-cond);font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase"><span style="color:var(--green)">A favor</span><span style="color:var(--gray4);margin:0 6px">·</span><span style="color:var(--red)">En contra</span></span>
+      </div>
+      ${STATS_DEF.map(s=>`<div class="totals-row"><span class="totals-stat-name">${s.name}</span><span class="totals-vals"><span class="v-us">${agg[s.id].f}</span><span class="v-sep">—</span><span class="v-them">${agg[s.id].c}</span></span></div>`).join('')}
+    </div>`;
+}
+
+/* ─── PARTIDOS ─── */
+function renderPartidos() {
+  const el = document.getElementById('tab-partidos');
+  if (games.length===0) {
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Sin partidos</div><div class="empty-sub">Los partidos guardados por la entrenadora aparecerán acá.</div></div>`;
+    return;
+  }
+  el.innerHTML=`
+    <div class="section-label">Historial · ${games.length} partido${games.length!==1?'s':''}</div>
+    ${games.map(g=>{
+      const res=g.score.f>g.score.c?'w':g.score.f<g.score.c?'l':'e';
+      const resLabel=g.score.f>g.score.c?'Victoria':g.score.f<g.score.c?'Derrota':'Empate';
+      const tot=mkStats();
+      STATS_DEF.forEach(s=>(g.quarters||[]).forEach(q=>{tot[s.id].f+=((q||{})[s.id]||{f:0}).f;tot[s.id].c+=((q||{})[s.id]||{c:0}).c;}));
+      return `<div class="rink-card" style="margin-bottom:10px">
+        <div class="rink-header" style="${g.score.f>g.score.c?'background:var(--green)':g.score.f<g.score.c?'background:var(--red)':'background:var(--gray2)'}">
+          <span class="rink-header-title">vs ${g.rival||'?'}</span>
+          <div style="text-align:right">
+            <div style="font-family:var(--font-head);font-size:22px;color:white">${g.score.f} — ${g.score.c}</div>
+            <div style="font-family:var(--font-cond);font-size:9px;color:rgba(255,255,255,0.7);letter-spacing:1px">${g.date||''}</div>
+          </div>
+        </div>
+        <div style="padding:8px 0">
+          ${STATS_DEF.map(s=>`<div class="totals-row"><span class="totals-stat-name">${s.name}</span><span class="totals-vals"><span class="v-us">${tot[s.id].f}</span><span class="v-sep">—</span><span class="v-them">${tot[s.id].c}</span></span></div>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+/* ─── PROFILE MODAL ─── */
+window.openProfileModal = function() {
+  document.getElementById('p-name').value = playerData.name||'';
+  document.getElementById('p-number').value = playerData.number||'';
+  selectedPos = playerData.position||'';
+  document.querySelectorAll('.pos-btn').forEach(b=>b.classList.toggle('active',b.textContent===selectedPos));
+  document.getElementById('profile-modal').classList.add('open');
+};
+window.closeProfileModal = function() { document.getElementById('profile-modal').classList.remove('open'); };
+window.selectPos = function(pos) {
+  selectedPos=pos;
+  document.querySelectorAll('.pos-btn').forEach(b=>b.classList.toggle('active',b.textContent===pos));
+};
+window.saveProfile = async function() {
+  playerData.name = document.getElementById('p-name').value.trim()||'';
+  playerData.number = document.getElementById('p-number').value||'';
+  playerData.position = selectedPos;
+  localStorage.setItem('ec-player-data', JSON.stringify(playerData));
+  // Registrar en Firestore como parte del plantel
+  if (teamId && playerId && playerData.name) {
+    await setDoc(doc(db,'teams',teamId,'players',playerId), {
+      ...playerData,
+      updatedAt: serverTimestamp()
+    });
+  }
+  updateHeaderUI();
+  closeProfileModal();
+  toast('✓ Perfil guardado');
+  renderInicio();
+  renderAlineacion();
+};
+
+window.onOverlayClick = function(e) {
+  if(e.target===document.getElementById('profile-modal')) closeProfileModal();
+};
+
+let toastTimer;
+window.toast = function(msg) {
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+};
+
+init();
+</script>
+</body>
+</html>
